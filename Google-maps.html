@@ -11,7 +11,14 @@
         padding: 0;
       }
       #map {
-        height: 100%;
+        height: 30%;
+      }
+      #image{
+      	height:20%;
+      }
+      #stacked{
+       height:50%;
+       width:50%;
       }
 #floating-panel {
   position: absolute;
@@ -39,14 +46,32 @@
   line-height: 30px;
   padding-left: 10px;
 }
+#floating-panel2{
+  position: absolute;
+  top: 10px;
+  left: 75%;
+  z-index: 5;
+  background-color: #fff;
+  padding: 5px;
+  border: 1px solid #999;
+  text-align: center;
+  font-family: 'Roboto','sans-serif';
+  line-height: 30px;
+  padding-left: 10px;
+}
 
     </style>
     <script src="http://d3js.org/d3.v3.min.js"></script>
+    <link href="nv.d3.css" rel="stylesheet" type="text/css">
+    <script src="nv.d3.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="http://d3js.org/queue.v1.min.js"></script>
-     
+    <script src="maps.js"></script>
   </head>
   <body>
+  	<div id="image">
+  		<img src="yelp.png" alt="Mountain View">
+  	</div>
     <div id="floating-panel">
       <input id="address" type="textbox" value="Arizona">
       <input id="submit" type="button" value="Geocode">
@@ -55,202 +80,13 @@
       <select id="categories"></select>
       <input id="submit_categories" type="button" value="filter" onClick="filter()">
     </div>
+    
     <div id="map"></div>
-    <script>
-    
-   var citymap = {
-  chicago: {
-    center: {lat: 33.499313, lng:-111.983758 },
-    population: 2714856
-  },
-  newyork: {
-    center: {lat: 40.714, lng: -74.005},
-    population: 8405837
-  },
-  losangeles: {
-    center: {lat: 34.052, lng: -118.243},
-    population: 3857799
-  },
-  vancouver: {
-    center: {lat: 49.25, lng: -123.1},
-    population: 603502
-  }
-};
-var categories=[];
-var circless=[];
-var cat = "Doctors";
-function center(lati,longi){
-	this.lat = lati;
-	this.lng = longi;
-}
-var data;
-d3.json("business.json", function (error, loadeddata) {
-    if (error) throw error;
-    //console.log(loadeddata[0].categories);
-    console.log('Completed');
-    data=loadeddata;
-    
-    var category = document.getElementById("categories")
-    for(var id in data){
-    temp=data[id].categories;
-    for (var index in temp){
-    	if(categories.indexOf(temp[index]) == -1){
-    		var check=typeof temp[index];
-    	    if(check=="string"){
-    		categories.push(temp[index]);
-    		category.innerHTML += "<option value="+temp[index]+">"+temp[index]+"</option>"
-    		}
-    		}
-    }}
-	initMap();
-});
- 
- var mapDiv = null;
- var map = null;
- 
-function initMap(){
- if(!mapDiv){
-  mapDiv = document.getElementById('map');
- map = new google.maps.Map(document.getElementById('map') ,{
-    zoom: 12,
-    center: {lat: 33.499313, lng: -111.983758}
-  })}
-  // Construct the circle for each value in citymap.
-  // Note: We scale the area of the circle based on the population.
-  for(var i=0;i<circless.length;i++){
-  //console.log(index);
-  circless[i].setMap(null);
-  }
-  circless=[];
-  
-  for (var id in data) {
-    // Add the circle for this city to the map.
-    //console.log(id);
-    var tem=data[id].categories;
-    var temp=[];
-    for(var i in tem){
-    	temp.push(tem[i]);
-    }
-    if(temp.indexOf(cat)!=-1){
-    var cityCircle = new google.maps.Circle({
-      strokeColor: '#FF0000',
-      strokeOpacity: 0.8,
-      strokeWeight: 2,
-      clickable:true,
-      fillColor: 'steelblue',
-      fillOpacity: 0.35,
-      map: map,
-      center: new center(data[id].latitude,data[id].longitude),
-      radius: 30
-    });
-    circless.push(cityCircle);
-    var text = "Name: ".concat(data[id].name).concat("<br>Stars: ")
-    //console.log(data[id].stars)
-    for(var i=0;i<data[id].stars;i++) {
-    text=text.concat('★');
-    }
-    createClickableCircle(map, cityCircle, text);
-    }
-    
-  }
-  //console.log(circless.length)
-  
-  var geocoder = new google.maps.Geocoder();
-  document.getElementById('submit').addEventListener('click', function() {
-    geocodeAddress(geocoder, map);
-  });
-  
-}
-
-function createClickableCircle(map, circle, info){
-		//console.log(info)
-       var infowindow =new google.maps.InfoWindow({
-            content: info
-        });  
-        google.maps.event.addListener(circle, 'click', function(ev) {
-            // alert(infowindow.content);
-            infowindow.setPosition(circle.getCenter());
-            infowindow.open(map);
-        });
- }
-
-
-function geocodeAddress(geocoder, resultsMap) {
-  var address = document.getElementById('address').value;
-  geocoder.geocode({'address': address}, function(results, status) {
-    if (status === google.maps.GeocoderStatus.OK) {
-      resultsMap.setCenter(results[0].geometry.location);
-      var marker = new google.maps.Marker({
-        map: resultsMap,
-        position: results[0].geometry.location
-      });
-    } else {
-      alert('Geocode was not successful for the following reason: ' + status);
-    }
-  });
-}
-
-function filter(){
-	cat = document.getElementById('categories').value;
-	initMap();
-	
-}
-
-    </script>
+    <div id ="stackedareachart"></div>
    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA0Rgjo7Cs2P-0cnzBqVgJHcPCmVXk8cYU&signed_in=true&callback=initMap"
         async defer></script>
+    <div id="stacked">
+    <svg id="chart1"></svg>
+    </div>
   </body>
 </html>
-/*readTextFile("business.json");
-  filetext = filetext.split(" ");
-  var pos = filetext.indexOf('{"business_id":');
- 
-  business_id.push(filetext[pos+1].slice(1,-2));
-   pos = filetext.indexOf('"name":',pos+1);
-   var name_t="";
-   while(1)
-   {
-   if(filetext[pos+1][filetext[pos+1].length-1] == ',' && filetext[pos+1][filetext[pos+1].length-2] == '"')
-   	break;
-   	name_t = name_t.concat(filetext[pos+1])
-   	name_t = name_t.concat(' ');
-   	pos=pos+1;
-   	}
-   	name_t = name_t.concat(filetext[pos+1])
-   	//console.log(name_t);
-   names.push(name_t.slice(1,-2));
-  pos = filetext.indexOf('"longitude":',pos+1);
-  longitude=parseFloat(filetext[pos+1].slice(0,-1));
-  pos = filetext.indexOf('"latitude":',pos+1);
-  latitude=parseFloat(filetext[pos+1].slice(0,-1));
-  var newcenter = new center(latitude,longitude);
-  //console.log(newcenter);
-  centers.push(newcenter);
-  pos = filetext.indexOf('"business"}\n{"business_id":', pos+1);
-  business_id.push(filetext[pos+1].slice(1,-2));
-  var count=2
-  while (pos !== -1) {
-    pos = filetext.indexOf('"name":',pos+1);
-   var name_t="";
-   while(1)
-   {
-   if(filetext[pos+1][filetext[pos+1].length-1] == ',' && filetext[pos+1][filetext[pos+1].length-2] == '"')
-   	break;
-   	name_t = name_t.concat(filetext[pos+1])
-   	name_t = name_t.concat(' ');
-   	pos=pos+1;
-   	}
-   	name_t = name_t.concat(filetext[pos+1])
-   	//console.log(name_t);
-   names.push(name_t.slice(1,-2));
-  pos = filetext.indexOf('"longitude":',pos+1);
-  longitude=parseFloat(filetext[pos+1].slice(0,-1));
-  pos = filetext.indexOf('"latitude":',pos+1);
-  latitude=parseFloat(filetext[pos+1].slice(0,-1));
-  var newcenter = new center(latitude,longitude);
-  centers.push(newcenter);
-  pos = filetext.indexOf('"business"}\n{"business_id":', pos+1);
-  if(pos!=-1)
-  business_id.push(filetext[pos+1].slice(1,-2));
-}
-console.log(names.length)*/	
