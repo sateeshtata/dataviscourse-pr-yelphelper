@@ -24,3 +24,21 @@ body{
     fill-opacity: .5;
     pointer-events: none;
 }
+
+svg {
+    display: block;
+}
+
+.well {
+    text-align: left;
+}
+
+#areaGraph {
+    width: 600px;
+    height: 350px;
+}
+
+#barGraph {
+    width: 600px;
+    height: 350px;
+}

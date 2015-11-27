@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html>
-
-<head lang="en">
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <title>CS-6630 Project-YelpHelper</title>
 
@@ -10,7 +9,6 @@
     <script src="http://code.jquery.com/jquery-2.1.4.js" charset="utf-8"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="http://d3js.org/queue.v1.min.js"></script>
-    <script src="js/nv.d3.js"></script>
 
     <!--Stylesheets-->
     <link rel="stylesheet" type="text/css" href="libs/bootstrap/css/bootstrap.min.css">
@@ -19,17 +17,12 @@
     <link href='http://fonts.googleapis.com/css?family=PT+Sans:400,700' rel='stylesheet' type='text/css'>
 
     <!-- Get some nice font-->
-    <script src="js/ratingsVis.js"></script>
-    <script src="js/mapVis.js"></script>
-    <script src="js/main.js"></script>
+    <!-- <script src="js/comparevis.js"></script> -->
 
     <!-- add own stylesheet-->
     <link rel="stylesheet" type="text/css" href="css/myStyle.css">
     <link rel="stylesheet" type="text/css" href="css/cover.css">
-    <link rel="stylesheet" type="text/css" href="css/nv.d3.css">
-
 </head>
-
 <body>
 
 <div class="site-wrapper">
@@ -43,8 +36,8 @@
                     <h3 class="masthead-brand">YelpHelper</h3>
                     <nav>
                         <ul class="nav masthead-nav">
-                            <li class="active"><a href="index.html">Home</a></li>
-                            <li><a href="analysis.html">Analysis</a></li>
+                            <li><a href="index.html">Home</a></li>
+                            <li class="active"><a href="analysis.html">Analysis</a></li>
                             <li><a href="credits.html">Credits</a></li>
                         </ul>
                     </nav>
@@ -52,22 +45,16 @@
             </div>
 
             <div class="inner cover">
-                <div class="well col-md-7">Map Plotting!!</div>
-                <div class="well col-md-5">Business Percentages!</div>
-                <div class="well col-md-6">
-                    <h4>Business/Rating Area Chat!</h4>
-                    <button onclick="mapVis.expandLegend();">Expand/Contract Legend</button>
-                    <svg id="areaGraph"></svg>
-                </div>
-                <div class="well col-md-6">
-                    <h4>Bar Graph Business</h4>
-                    <svg id="barGraph"></svg>
-                </div>
+                <h1 class="cover-heading">Analysis</h1>
+                <p class="lead">Cover is a one-page template for building simple and beautiful home pages. Download, edit the text, and add your own fullscreen background photo to make it your own.</p>
+                <p class="lead">
+                    <a href="#" class="btn btn-lg btn-default">Learn more</a>
+                </p>
             </div>
 
             <div class="mastfoot">
                 <div class="inner">
-                    <p>Visualization Course,  <a href="http://dataviscourse.net/2015/index.html"> dataViz</a>,  <a href="http://www.utah.edu/"> @UoU</a>.</p>
+                    <p>Visualization Course,  <a href="http://dataviscourse.net/2015/index.html">dataViz</a>,  <a href="http://www.utah.edu/">@UoU</a>.</p>
                 </div>
             </div>
 
@@ -76,6 +63,6 @@
     </div>
 
 </div>
-</body>
 
+</body>
 </html>

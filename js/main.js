@@ -1,28 +1,10 @@
 /*globals d3, queue, CountVis, AgeVis, PrioVis, CompareVis*/
 
-/**
- * Created by Alex Bigelow (alex.bigelowsite.com) on 9/25/15.
- */
-
-// This syntax may look weird:
-
-// (function () {
-//      // all the code is in here
-// })();
-
-// This is called a "closure." In previous assignments,
-// we have just executed statements in a global context
-// as files were loaded. Closures are similar - stuff inside
-// the closure is executed immediately. However, all the
-// variables and things we create globally no longer "pollute"
-// the global namespace; now they're eligible for garbage
-// collection, and global variable names you define here
-// won't collide with variable names in other scripts and libraries.
-
 (function () {
     // some variables
     var allData = [];
     var metaData = {};
+    var mapVis, ratingsVis;
 
     // this function can convert Date objects to a string
     // it can also convert strings to Date objects
@@ -31,17 +13,20 @@
 
     // call this function after Data is loaded, reformatted and bound to the variables
     function initVis() {
-        
         // ******* TASK 3b, 3c *******
         // Create a handler that will deal with a custom event named "selectionChanged"
         // (you will need to edit this line)
-        var eventHandler = d3.dispatch("selectionChanged");
+        //var eventHandler = d3.dispatch("selectionChanged");
 
         // Instantiate all Vis Objects here
-        var countVis = new CountVis(d3.select("#countVis"), allData, metaData, eventHandler);
-        var ageVis = new AgeVis(d3.select("#ageVis"), allData, metaData);
-        var prioVis = new PrioVis(d3.select("#prioVis"), allData, metaData);
-        var compareVis = new CompareVis(d3.select("#compareVis"), allData, metaData);
+        var dataGraph = allData.splice(1, 6);
+        //console.log('IntiViz spliced data: ' + JSON.stringify(dataGraph));
+        //console.log(allData);
+        mapVis = new MapVis(d3.select("#areaGraph"), dataGraph, metaData);
+        ratingsVis = new RatingsVis(d3.select("#barGraph"), dataGraph, metaData);
+        //var ageVis = new AgeVis(d3.select("#ageVis"), allData, metaData);
+        //var prioVis = new PrioVis(d3.select("#prioVis"), allData, metaData);
+        //var compareVis = new CompareVis(d3.select("#compareVis"), allData, metaData);
         // ******** TASK 3b, 3c *******
         // Bind the eventHandler to the Vis Objects
         // events will be created from the CountVis object (TASK 4b)
@@ -49,13 +34,13 @@
         // (you should bind the appropriate functions here)
         // Also make sure to display something reasonable about
         // the brush in #brushInfo
-        function eventHandlerBinder(start, end){
+        /*function eventHandlerBinder(start, end){
             prioVis.onSelectionChange(start, end);
             ageVis.onSelectionChange(start, end);
             compareVis.onSelectionChange(start, end);
         }
 
-        eventHandler.on("selectionChanged", eventHandlerBinder);
+        eventHandler.on("selectionChanged", eventHandlerBinder);*/
         
     }
 
@@ -65,25 +50,61 @@
     function dataLoaded(error, perDayData, _metaData) {
         if (!error) {
             // make our data look nicer and more useful:
+
+            //console.log(JSON.stringify(perDayData));
+            //console.log(JSON.stringify(allData));
+            //allData = perDayData;
+            /*allData = perDayData.map(function (d) {
+                return d;
+            });*/
             allData = perDayData.map(function (d) {
+
                 var res = {
-                    time: dateFormatter.parse(d.day),
-                    count: +d["count(*)"]
+                    key: d.business_id,
+                    values: [[Date.parse(d.date), d.stars]]
                 };
-                
-                res.prios = d3.range(0, 16).map(function (counter) {
-                        return d["sum(p" + counter + ")"];
-                    });
-                res.ages = d3.range(0, 99).map(function () {
-                    return 0;
-                });
-                d.age.forEach(function (a) {
-                    if (a.age < 100) {
-                        res.ages[a.age] = a["count(*)"];
-                    }
-                });
+
                 return res;
             });
+
+            //console.log('Data :' + JSON.stringify(allData));
+            var temp = {};
+            var values = [];
+
+            for (var i=0; i<allData.length; i++) {
+                temp[allData[i].key] =
+                    temp[allData[i].key] === undefined ?
+                        [allData[i].values] :
+                    temp[allData[i].key] + ';' + [allData[i].values];
+            }
+
+            allData = [];
+
+            for (var key in temp) {
+                values = temp[key].split(';');
+                var dates = {};
+
+                for (var j=0; j<values.length; j++){
+                    var dateVals = [];
+                    dateVals = values[j].split(',');
+
+                    dates[dateVals[0]] =
+                        dates[dateVals[0]] === undefined ?
+                            parseInt(dateVals[1]) :
+                        dates[dateVals[0]]  + parseInt(dateVals[1]);
+                }
+
+                values = [];
+
+                for(var dKey in dates){
+                    values.push([dKey, dates[dKey]]);
+                }
+
+                allData.push({key: key, values:values})
+            }
+
+            console.log('Sliced Data: ' + JSON.stringify(allData.splice(1,6)));
+
             metaData = _metaData;
 
             initVis();
@@ -93,8 +114,7 @@
     function startHere() {
         // ******* TASK 1a *******
         // Load each data file ASYNCHRONOUSLY, and then call dataLoaded() when they are finished.
-        queue().defer(d3.json, './data/perDayData.json')
-            .defer(d3.json, './data/MYWorld_fields.json')
+        queue().defer(d3.json, './data/test.json')
             .await(dataLoaded);
         
     }
