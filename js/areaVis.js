@@ -1,9 +1,9 @@
 /**
- * Created by Sateesh on 11/19/15.
+ * Created by Sateesh on 11/30/15.
  */
 /*globals d3, jQuery*/
 
-function MapVis(_parentElement, _data, _metaData, _eventHandler) {
+function AreaVis(_parentElement, _data, _metaData, _eventHandler) {
 
     var self = this;
 
@@ -65,7 +65,7 @@ var areaData = [
     }
 ];
 
-MapVis.prototype.expandLegend = function (){
+AreaVis.prototype.expandLegend = function (){
     var exp = chart.legend.expanded();
     chart.legend.expanded(!exp);
     chart.update();
@@ -76,7 +76,7 @@ MapVis.prototype.expandLegend = function (){
  * @param _data -- the data array
  * @param _metaData -- the meta-data / data description object
  */
-MapVis.prototype.initVis = function () {
+AreaVis.prototype.initVis = function () {
     var self = this;
 
     var colors = d3.scale.category20();
@@ -111,7 +111,7 @@ MapVis.prototype.initVis = function () {
     //self.updateVis();
 };
 
-MapVis.prototype.brushed = function() {
+AreaVis.prototype.brushed = function() {
     var self = this;
 
     self.eventHandler.selectionChanged(self.brush.extent()[0], self.brush.extent()[1]);
@@ -120,7 +120,7 @@ MapVis.prototype.brushed = function() {
 /**
  * Method to wrangle the data
  */
-MapVis.prototype.wrangleData = function () {
+AreaVis.prototype.wrangleData = function () {
     var self = this;
 
     // displayData should hold the data which is visualized
@@ -131,7 +131,7 @@ MapVis.prototype.wrangleData = function () {
 /**
  * The main drawing function
  */
-MapVis.prototype.updateVis = function () {
+AreaVis.prototype.updateVis = function () {
 
     var self = this;
 
@@ -170,7 +170,7 @@ MapVis.prototype.updateVis = function () {
         .attr("d", self.area);
 };
 
-MapVis.prototype.draw = function () {
+AreaVis.prototype.draw = function () {
     var self = this;
 
     self.visG.selectAll(".area").attr("d", self.area);
@@ -186,7 +186,7 @@ MapVis.prototype.draw = function () {
  * See http://bl.ocks.org/mbostock/6452972 for an example
  * TODO: implement the update of the scale according to the value of the slider in this function
  */
-MapVis.prototype.addSlider = function (svg) {
+AreaVis.prototype.addSlider = function (svg) {
     var self = this;
 
     // Think of what is domain and what is range for the y axis slider !!

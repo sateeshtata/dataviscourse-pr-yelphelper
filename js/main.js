@@ -3,8 +3,9 @@
 (function () {
     // some variables
     var allData = [];
+    var sunBurstData;
     var metaData = {};
-    var mapVis, ratingsVis;
+    var mapVis, ratingsVis, sunBurstVis, areaVis;
 
     // this function can convert Date objects to a string
     // it can also convert strings to Date objects
@@ -22,8 +23,9 @@
         var dataGraph = allData.splice(1, 6);
         //console.log('IntiViz spliced data: ' + JSON.stringify(dataGraph));
         //console.log(allData);
-        mapVis = new MapVis(d3.select("#areaGraph"), dataGraph, metaData);
+        areaVis = new AreaVis(d3.select("#areaGraph"), dataGraph, metaData);
         ratingsVis = new RatingsVis(d3.select("#barGraph"), dataGraph, metaData);
+        sunBurstVis = new SunBurstVis(d3.select("#sunBurst"), sunBurstData, metaData);
         //var ageVis = new AgeVis(d3.select("#ageVis"), allData, metaData);
         //var prioVis = new PrioVis(d3.select("#prioVis"), allData, metaData);
         //var compareVis = new CompareVis(d3.select("#compareVis"), allData, metaData);
@@ -44,19 +46,20 @@
         
     }
 
+    //Call this function to initialize loading of sun burst data.
+    function dataLoadSB(error, data, sbData){
+        if(!error){
+            sunBurstData = sbData;
+        }
+    }
+
 
 
     // call this function after both files are loaded -- error should be "null" if no error
-    function dataLoaded(error, perDayData, _metaData) {
+    function dataLoaded(error, perDayData, sbData, _metaData) {
         if (!error) {
-            // make our data look nicer and more useful:
+            sunBurstData = sbData;
 
-            //console.log(JSON.stringify(perDayData));
-            //console.log(JSON.stringify(allData));
-            //allData = perDayData;
-            /*allData = perDayData.map(function (d) {
-                return d;
-            });*/
             allData = perDayData.map(function (d) {
 
                 var res = {
@@ -103,7 +106,7 @@
                 allData.push({key: key, values:values})
             }
 
-            console.log('Sliced Data: ' + JSON.stringify(allData.splice(1,6)));
+            //console.log('Sliced Data: ' + JSON.stringify(allData.splice(1,6)));
 
             metaData = _metaData;
 
@@ -112,12 +115,9 @@
     }
 
     function startHere() {
-        // ******* TASK 1a *******
-        // Load each data file ASYNCHRONOUSLY, and then call dataLoaded() when they are finished.
-        queue().defer(d3.json, './data/test.json')
+        queue().defer(d3.json, './data/test.json').defer(d3.json, './data/sunBurst.json')
             .await(dataLoaded);
-        
     }
-    
+
     startHere();
 })();

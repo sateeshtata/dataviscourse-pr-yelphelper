@@ -20,7 +20,9 @@
 
     <!-- Get some nice font-->
     <script src="js/ratingsVis.js"></script>
+    <script src="js/sunBurstVis.js"></script>
     <script src="js/mapVis.js"></script>
+    <script src="js/areaVis.js"></script>
     <script src="js/main.js"></script>
 
     <!-- add own stylesheet-->
@@ -53,7 +55,10 @@
 
             <div class="inner cover">
                 <div class="well col-md-7">Map Plotting!!</div>
-                <div class="well col-md-5">Business Percentages!</div>
+                <div class="well col-md-5">
+                    <h4>Business Percentages!</h4>
+                    <svg id="sunBurst"></svg>
+                </div>
                 <div class="well col-md-6">
                     <h4>Business/Rating Area Chat!</h4>
                     <button onclick="mapVis.expandLegend();">Expand/Contract Legend</button>

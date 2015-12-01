@@ -40,5 +40,11 @@ svg {
 
 #barGraph {
     width: 600px;
-    height: 350px;
+    height: 400px;
+}
+
+.brush .extent {
+    stroke: #fff;
+    fill-opacity: .125;
+    shape-rendering: crispEdges;
 }
