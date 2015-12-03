@@ -26,10 +26,21 @@ RatingsVis.prototype.initVis = function () {
     var self = this;
 
     self.margin = {top: 20, right: 20, bottom: 100, left: 40};
-    self.margin2 = {top: 350, right: 20, bottom: 20, left: 40};
+    self.margin2 = {top: 300, right: 20, bottom: 20, left: 40};
     self.width = 600 - self.margin.left - self.margin.right;
-    self.height = 400 - self.margin.top - self.margin.bottom;
-    self.height2 = 400 - self.margin2.top - self.margin2.bottom;
+    self.height = 350 - self.margin.top - self.margin.bottom;
+    self.height2 = 350 - self.margin2.top - self.margin2.bottom;
+
+    testData.map(function(d){
+        var y0 = 0;
+        var result = [];
+        for(var key in d){
+            if(key != 'total' && key != 'business_id') {
+                result.push({name: key, y0: y0, y1: y0 += +d[key]});
+            }
+        }
+        d.stars = result.reverse();
+    });
 
     self.x = d3.scale.ordinal()
         .rangeRoundBands([0, self.width], .1);
@@ -44,6 +55,8 @@ RatingsVis.prototype.initVis = function () {
     self.color = d3.scale.ordinal()
         .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
+    self.color.domain(['5_stars', '4_stars', '3_stars', '2_stars', '1_stars']);
+
     self.xAxis = d3.svg.axis()
         .scale(self.x)
         .orient("bottom");
@@ -57,9 +70,13 @@ RatingsVis.prototype.initVis = function () {
         .scale(self.x2)
         .orient("bottom");
 
-    self.brush = d3.svg.brush().x(self.x2).on("brush", function() {
+    self.brush = d3.svg.brush().x(self.x2)
+        .on("brushend", function(){
+            self.brushed();
+        });
+        /*.on("brushend", function() {
         self.brushed();
-    });
+    });*/
 
     self.svg = self.parentElement
         .attr("width", self.width + self.margin.left + self.margin.right)
@@ -81,6 +98,25 @@ RatingsVis.prototype.initVis = function () {
     self.context = self.svg.append("g")
         .attr("transform", "translate(" + self.margin2.left + "," + self.margin2.top + ")");
 
+    self.legend = self.svg.selectAll(".legend")
+        .data(self.color.domain().slice().reverse())
+        .enter().append("g")
+        .attr("class", "legend")
+        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+    self.legend.append("rect")
+        .attr("x", self.width - 12)
+        .attr("width", 18)
+        .attr("height", 18)
+        .style("fill", self.color);
+
+    self.legend.append("text")
+        .attr("x", self.width - 18)
+        .attr("y", 9)
+        .attr("dy", ".35em")
+        .style("text-anchor", "end")
+        .text(function(d) { return d; });
+
     // filter, aggregate, modify data
     self.wrangleData();
 
@@ -93,9 +129,19 @@ RatingsVis.prototype.initVis = function () {
 RatingsVis.prototype.wrangleData = function () {
     var self = this;
 
-    // displayData should hold the data which is visualized
-    // pretty simple in this case -- no modifications needed
-    self.displayData = self.data;
+    if(self.selectedRange && self.selectedRange.length > 0){
+        self.displayData = self.selectedRange;
+    }
+    else{
+        self.displayData = testData;
+    }
+
+    //self.updateVis()
+
+    //console.log('Display Data : '+ JSON.stringify(self.displayData));
+
+    self.updateFocus();
+
 };
 
 /**
@@ -105,33 +151,32 @@ RatingsVis.prototype.updateVis = function () {
 
     var self = this;
 
-    self.color.domain(['5_stars', '4_stars', '3_stars', '2_stars', '1_stars']);
-
     //self.color.domain(d3.keys(data[0]).filter(function(key) { console.log('Keys:'+key!=="State");return key !== "State"; }));
     //console.log('Color Domain: '+ d3.keys(data[0]).filter(function(key) { console.log('Keys:'+key!=="State");return key !== "State"; }))
 
-    testData.map(function(d){
-        var y0 = 0;
-        var result = [];
-        for(var key in d){
-            if(key != 'total' && key != 'business_id') {
-                result.push({name: key, y0: y0, y1: y0 += +d[key]});
-            }
-        }
-        d.stars = result.reverse();
-    });
+    //testData.sort(function(a, b) { return b.total - a.total; });
 
-    testData.sort(function(a, b) { return b.total - a.total; });
+    self.x2.domain(testData.map(function(d) { return d.business_id; }));
+    self.y2.domain([0, d3.max(testData, function(d) { return d.total; })]);
 
-    self.x.domain(testData.map(function(d) { return d.business_id; }));
-    self.y.domain([0, d3.max(testData, function(d) { return d.total; })]);
+    self.contextState = self.context.selectAll(".businesses")
+        .data(testData)
+        .enter().append("g")
+        .attr("class", "businesses")
+        .attr("transform", function(d) {return "translate(" + self.x2(d.business_id) + ",0)";});
 
-    self.x2.domain(self.x.domain());
-    self.y2.domain(self.y.domain());
+    self.contextState.selectAll("rect")
+        .data(function(d){return d.stars;})
+        .enter().append("rect")
+        .attr("width", self.x2.rangeBand())
+        .attr("y", function(d) { return self.y2(d.y1); })
+        .attr("height", function(d) { return self.y2(d.y0) - self.y2(d.y1); })
+        .style("fill", function(d) {return self.color(d.name);});
 
     self.focus.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + self.height + ")")
+        .transition().duration(300)
         .call(self.xAxis);
 
     self.focus.append("g")
@@ -144,10 +189,67 @@ RatingsVis.prototype.updateVis = function () {
         .style("text-anchor", "end")
         .text("Ratings");
 
-    self.state = self.barsGroup.selectAll(".state")
-        .data(testData)
-        .enter().append("g")
-        .attr("class", "g")
+    self.context.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + self.height2 + ")")
+        .transition().duration(300)
+        .call(self.xAxis2);
+
+    self.context.append("g")
+        .attr("class", "x brush")
+        .call(self.brush)
+        .selectAll("rect")
+        .attr("y", -6)
+        .attr("height", self.height2 + 7);
+
+    self.updateFocus();
+
+};
+
+RatingsVis.prototype.brushed = function() {
+    var self = this;
+
+    self.brushedRange = self.brush.empty() ? self.x2.domain() : self.brush.extent();
+
+    console.log('Brush Range: ' + self.brushedRange);
+
+    self.selectedRange =  testData.filter(function(d){
+        if(self.brush.empty()){
+            return d;
+        }
+        else{
+            if ((self.brush.extent()[0] <= self.x(d.business_id)) && (self.x(d.business_id) <= self.brush.extent()[1])){
+                return d;
+            }
+        }
+     });
+
+    /*self.x.domain(self.brush.empty() ? self.x2.domain() : self.brush.extent());
+    self.state.attr("transform", function(d) { return "translate(" + self.x(d.business_id) + ",0)"; });
+    self.focusGraph.attr("width", self.x.rangeBand());
+
+    self.focus.select(".x.axis").call(self.xAxis);*/
+
+    self.wrangleData()
+
+};
+
+RatingsVis.prototype.updateFocus = function () {
+    var self = this;
+
+    self.x.domain(self.displayData.map(function(d) { return d.business_id; }));
+    self.y.domain([0, d3.max(self.displayData, function(d) { return d.total; })]);
+
+    self.barsGroup.selectAll(".business").remove();
+    self.state = self.barsGroup.selectAll(".business")
+        .data(self.displayData);
+
+    //self.state.exit().remove();
+
+    self.state.enter().append("g")
+        .attr("class", "business")
+        .transition()
+        .duration(500)
         .attr("transform", function(d) { return "translate(" + self.x(d.business_id) + ",0)"; });
 
     self.focusGraph = self.state.selectAll("rect")
@@ -158,170 +260,13 @@ RatingsVis.prototype.updateVis = function () {
         .attr("height", function(d) { return self.y(d.y0) - self.y(d.y1); })
         .style("fill", function(d) {return self.color(d.name);});
 
-    /*self.svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + self.height + ")")
+    self.focus.select(".x.axis")
+        .transition().duration(500)
         .call(self.xAxis);
 
-    self.svg.append("g")
-        .attr("class", "y axis")
-        .call(self.yAxis)
-        .append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
-        .style("text-anchor", "end")
-        .text("Ratings");*/
-
-    self.context.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + self.height2 + ")")
-        .call(self.xAxis2);
-
-    self.contextState = self.context.selectAll(".state")
-        .data(testData)
-        .enter().append("g")
-        .attr("class", "g")
-        .attr("transform", function(d) {return "translate(" + self.x2(d.business_id) + ",0)";});
-
-    self.contextState.selectAll("rect")
-        .data(function(d){return d.stars;})
-        .enter().append("rect")
-        .attr("width", self.x2.rangeBand())
-        .attr("y", function(d) { return self.y2(d.y1); })
-        .attr("height", function(d) { return self.y2(d.y0) - self.y2(d.y1); })
-        .style("fill", function(d) {return self.color(d.name);});
-
-    /*self.context.selectAll("rect")
-        .data(testData)
-        .enter().append("rect")
-        .attr("x", function(d) { return self.x2(d.business_id); })
-        .attr("y", function(d) { return self.height2 - self.y2(d.total); })
-        .attr("width", self.x2.rangeBand())
-        .attr("height", function(d) { return self.y2(d.total); });*/
-
-    self.context.append("g")
-        .attr("class", "x brush")
-        .call(self.brush)
-        .selectAll("rect")
-        .attr("y", -6)
-        .attr("height", self.height2 + 7);
-
-
-    /*self.state.selectAll("rect")
-        .data(function(d) { return d.stars; })
-        .enter().append("rect")
-        .attr("width", self.x.rangeBand())
-        .attr("y", function(d) { return self.y(d.y1); })
-        .attr("height", function(d) { return self.y(d.y0) - self.y(d.y1); })
-        .style("fill", function(d) { return self.color(d.name); });
-
-    console.log('Domain Values: '+ self.color.domain().slice().reverse());*/
-
-    self.legend = self.svg.selectAll(".legend")
-        .data(self.color.domain().slice().reverse())
-        .enter().append("g")
-        .attr("class", "legend")
-        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-
-    self.legend.append("rect")
-        .attr("x", self.width - 18)
-        .attr("width", 18)
-        .attr("height", 18)
-        .style("fill", self.color);
-
-    self.legend.append("text")
-        .attr("x", self.width - 24)
-        .attr("y", 9)
-        .attr("dy", ".35em")
-        .style("text-anchor", "end")
-        .text(function(d) { return d; });
-
+    self.focus.select(".y.axis")
+        .transition().duration(500)
+        .call(self.yAxis);
 
 };
 
-RatingsVis.prototype.brushed = function() {
-    var self = this;
-
-    self.x.domain(self.brush.empty() ? self.x2.domain() : self.brush.extent());
-
-    //self.focusGraph.attr("width", self.x.rangeband());
-    self.focus.select(".x.axis").call(self.xAxis);
-
-    //self.x.domain(self.brush.empty() ? self.x2.domain() : self.brush.extent());
-    //self.focusGraph.attr("x", function(d, i) { return x(d.date); });
-    //self.focusGraph.attr("width", self.x.rangeband());
-
-    //self.focus.select(".x.axis").call(self.xAxis);
-    //self.eventHandler.selectionChanged(self.brush.extent()[0], self.brush.extent()[1]);
-};
-
-RatingsVis.prototype.draw = function () {
-    var self = this;
-
-    // Force changing brush range
-    //brush.extent(x.domain());
-    //svg.select(".brush").call(brush);
-}
-
-/**
- * Creates the y axis slider
- * @param svg -- the svg element to which the slider is attached
- * See http://bl.ocks.org/mbostock/6452972 for an example
- * TODO: implement the update of the scale according to the value of the slider in this function
- */
-RatingsVis.prototype.addSlider = function (svg) {
-    var self = this;
-
-    // Think of what is domain and what is range for the y axis slider !!
-
-    var sliderScale = d3.scale.linear().domain([1, 0.1]).range([200, 0]);
-
-    var sliderDragged = function () {
-        var value = Math.max(0, Math.min(200, d3.event.y));
-
-        var sliderValue = sliderScale.invert(value);
-
-        // ******* TASK 2b *******
-        // ******* TASK 2b *******
-        // the current value of the slider:
-        //console.log("Y Axis Slider value: ", sliderValue);
-
-        // do something here to deform the y scale
-        self.yScale.exponent(sliderValue);
-
-        d3.select(this)
-            .attr("y", function () {
-                return sliderScale(sliderValue);
-            });
-
-        self.updateVis({});
-    };
-    var sliderDragBehaviour = d3.behavior.drag()
-        .on("drag", sliderDragged);
-
-    var sliderGroup = svg.append("g").attr({
-        class: "sliderGroup",
-        "transform": "translate(" + 0 + "," + 30 + ")"
-    });
-
-    sliderGroup.append("rect").attr({
-        class: "sliderBg",
-        x: 5,
-        width: 10,
-        height: 200
-    }).style({
-        fill: "lightgray"
-    });
-
-    sliderGroup.append("rect").attr({
-        "class": "sliderHandle",
-        y: sliderScale(1),
-        width: 20,
-        height: 10,
-        rx: 2,
-        ry: 2
-    }).style({
-        fill: "#333333"
-    }).call(sliderDragBehaviour);
-};

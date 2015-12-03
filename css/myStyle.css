@@ -40,6 +40,16 @@ svg {
 
 #barGraph {
     width: 600px;
+    height: 350px;
+}
+
+#sunBurst {
+    width: 350px;
+    height: 400px;
+}
+
+#mapPlot {
+    width: 650px;
     height: 400px;
 }
 

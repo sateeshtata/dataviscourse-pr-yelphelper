@@ -4,6 +4,7 @@
     // some variables
     var allData = [];
     var sunBurstData;
+    var lookUpData;
     var metaData = {};
     var mapVis, ratingsVis, sunBurstVis, areaVis;
 
@@ -23,9 +24,10 @@
         var dataGraph = allData.splice(1, 6);
         //console.log('IntiViz spliced data: ' + JSON.stringify(dataGraph));
         //console.log(allData);
+        mapVis = new MapVis(d3.select("#mapPlot"), sunBurstData, metaData);
         areaVis = new AreaVis(d3.select("#areaGraph"), dataGraph, metaData);
         ratingsVis = new RatingsVis(d3.select("#barGraph"), dataGraph, metaData);
-        sunBurstVis = new SunBurstVis(d3.select("#sunBurst"), sunBurstData, metaData);
+        sunBurstVis = new SunBurstVis(d3.select("#sunBurst"), sunBurstData, lookUpData);
         //var ageVis = new AgeVis(d3.select("#ageVis"), allData, metaData);
         //var prioVis = new PrioVis(d3.select("#prioVis"), allData, metaData);
         //var compareVis = new CompareVis(d3.select("#compareVis"), allData, metaData);
@@ -56,9 +58,11 @@
 
 
     // call this function after both files are loaded -- error should be "null" if no error
-    function dataLoaded(error, perDayData, sbData, _metaData) {
+    function dataLoaded(error, perDayData, sbData, lkUpData, _metaData) {
         if (!error) {
             sunBurstData = sbData;
+
+            lookUpData = lkUpData;
 
             allData = perDayData.map(function (d) {
 
@@ -115,7 +119,7 @@
     }
 
     function startHere() {
-        queue().defer(d3.json, './data/test.json').defer(d3.json, './data/sunBurst.json')
+        queue().defer(d3.json, './data/test.json').defer(d3.json, './data/sunBurst.json').defer(d3.json, './data/idLookUp.json')
             .await(dataLoaded);
     }
 

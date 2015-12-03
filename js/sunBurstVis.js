@@ -36,7 +36,7 @@ SunBurstVis.prototype.expandLegend = function (){
 SunBurstVis.prototype.initVis = function () {
     var self = this;
 
-    self.width = 400;
+    self.width = 350;
     self.height = 350;
 
     self.radius = Math.min(self.width, self.height) / 2;
@@ -79,7 +79,7 @@ SunBurstVis.prototype.updateVis = function () {
     self.svg = self.parentElement
         .attr("width", self.width)
         .attr("height", self.height)
-        .datum()
+        .datum(self.data)
         .append("g")
         .attr("transform", "translate(" + self.width / 2 + "," + (self.height / 2 + 10) + ")");
 
@@ -117,8 +117,11 @@ SunBurstVis.prototype.click = function (d) {
     var self = this;
     // fade out all text elements
     //self.text.transition().attr("opacity", 0);
+    var keys = d.name.split('>^<');
+    var key = keys[1];
 
-    console.log('Clicked: '+ d.name);
+    console.log('Clicked: '+ keys[0]);
+    console.log('Data: ' + JSON.stringify(self.metaData[0][key]));
 
     self.path.transition()
         .duration(750)
