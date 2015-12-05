@@ -36,8 +36,8 @@ SunBurstVis.prototype.expandLegend = function (){
 SunBurstVis.prototype.initVis = function () {
     var self = this;
 
-    self.width = 350;
-    self.height = 350;
+    self.width = 300;
+    self.height = 300;
 
     self.radius = Math.min(self.width, self.height) / 2;
 
@@ -48,6 +48,15 @@ SunBurstVis.prototype.initVis = function () {
         .range([0, self.radius]);
 
     self.color = d3.scale.category20c();
+
+    self.tooltip = d3.select("body")
+        .append("div")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .style("visibility", "hidden")
+        .text("a simple tooltip");
+
+    console.log(self.tooltip);
 
     self.updateVis();
 };
@@ -99,6 +108,13 @@ SunBurstVis.prototype.updateVis = function () {
     self.path = self.g.append("path")
         .attr("d", self.arc)
         .style("fill", function(d) { return self.color((d.children ? d : d.parent).name); })
+        .on("mouseover", function(d){
+            return self.tooltip.style("visibility", "visible").text(d.name.split(">^<")[0]);
+        })
+        .on("mousemove", function(){return self.tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+        .on("mouseout", function(){
+            return self.tooltip.style("visibility", "hidden");
+        })
         .on("click", function(d) {
             self.click(d);
         });
@@ -114,18 +130,18 @@ SunBurstVis.prototype.updateVis = function () {
 };
 
 SunBurstVis.prototype.click = function (d) {
+    var target = document.getElementById('foo');
+    target.style.display = 'block';
     var self = this;
     // fade out all text elements
     //self.text.transition().attr("opacity", 0);
     var keys = d.name.split('>^<');
     var key = keys[1];
-
-    console.log('Clicked: '+ keys[0]);
-    console.log('Data: ' + JSON.stringify(self.metaData[0][key]));
-
+    var flag=0;
     self.path.transition()
         .duration(750)
         .attrTween("d", self.arcTween(d))
+
         .each("end", function(e, i) {
             // check if the animated element's data e lies within the visible angle span given in d
             if (e.x >= d.x && e.x < (d.x + d.dx)) {
@@ -136,7 +152,30 @@ SunBurstVis.prototype.click = function (d) {
                     .attr("opacity", 1)
                     .attr("x", function(d) { return self.y(d.y); });
             }
+        })
+        .each("end",function(){
+            if(flag==0) {
+                var target = document.getElementById('foo');
+                target.style.display = 'block';
+                if(d.name == 'Businesses>^<totalResults'){
+                    var empty_list=[];
+                    self.eventHandler.selectionChanged(empty_list);
+                }
+                else{
+                    self.eventHandler.selectionChanged(self.metaData[0][key]);
+                }
+                flag=1;
+            }
         });
+
+
+    //self.eventHandler.selectionChanged(self.metaData[0][key]);
+    //ratingsVis.updateContext();
+
+    /*sunburst_ids = self.metaData[0][key];
+    console.log(sunburst_ids);
+    flag=1;
+    initMap();*/
 };
 
 
