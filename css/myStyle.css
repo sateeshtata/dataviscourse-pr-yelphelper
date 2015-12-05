@@ -29,32 +29,64 @@ svg {
     display: block;
 }
 
+
 .well {
     text-align: left;
 }
 
 #areaGraph {
-    width: 600px;
-    height: 350px;
+    height: 300px;
 }
 
 #barGraph {
-    width: 600px;
-    height: 350px;
-}
-
-#sunBurst {
-    width: 350px;
-    height: 400px;
+    height: 300px;
 }
 
 #mapPlot {
-    width: 650px;
-    height: 400px;
+    height: 320px;
+}
+
+#sunBurst {
+    height: 320px;
+}
+
+#map {
+    height: 320px;
 }
 
 .brush .extent {
     stroke: #fff;
     fill-opacity: .125;
     shape-rendering: crispEdges;
+}
+
+#foo{
+    z-index:1;
+    position:fixed;
+    top: 50%;
+    left: 60%;
+    width:30em;
+    height:18em;
+    margin-top: -9em; /*set to a negative number 1/2 of your height*/
+    margin-left: -15em; /*set to a negative number 1/2 of your width*/
+}
+#bipartiteGraph text{
+    font-size:9px;
+}
+#bipartiteGraph1 text{
+    font-size:9px;
+}
+
+.well {
+    background-color: rgba(245, 245, 245, 0.4);
+    margin-bottom: 5px;
+}
+
+.contextBars {
+    background-color: rgba(0, 0, 0, 0.4);
+    margin-bottom: 5px;
+}
+
+.filler {
+    height: 100px;
 }
