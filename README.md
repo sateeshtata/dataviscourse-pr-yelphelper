@@ -6,8 +6,8 @@ Project - http://yelphelper.azurewebsites.net/
 ScreenCast - https://youtu.be/wkJQlDoLz5o
 
 Instructions to set up the branch:
-To set up the git hub repository and get the project running locally, please follow the instructions,
-  ->Clone the git branch using the git https link from the repository
+To set up the git hub repository and get the project running locally, please follow the instructions,<br>
+  ->Clone the git branch using the git https link from the repository<br>
   ->Once the repository has been successfully cloned, go to the folder 'data' inside the repository.
   ->You will find a reviews.json.zip file, we had to zip this JSON because its exceeding the size limit of 100 MB allowed for git upload.
   ->Unzip this file to get the reviews.json in the 'data/' folder.
