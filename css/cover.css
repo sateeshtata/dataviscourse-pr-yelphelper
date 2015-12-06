@@ -30,7 +30,7 @@ body {
     background-color: #333;
 }
 body {
-    color: #333;
+    color: #fff;
     text-align: center;
     text-shadow: 0 1px 3px rgba(0,0,0,.5);
 }
@@ -129,7 +129,7 @@ body {
 
 .mastfoot {
     color: #999; /* IE8 proofing */
-    color: rgba(255,255,255,.5);
+    background-color: rgba(15,15,15,.5);
 }
 
 

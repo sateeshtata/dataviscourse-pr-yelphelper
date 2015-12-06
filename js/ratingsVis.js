@@ -85,7 +85,7 @@ RatingsVis.prototype.initVis = function () {
         .attr("dy", ".35em")
         .style("text-anchor", "end")
         .text("Top 750 Businesses")
-        .style("fill", "#6b486b");
+        .style("fill", "#fff");
 
     self.svg = self.parentElement
         .attr("width", self.width + self.margin.left + self.margin.right)

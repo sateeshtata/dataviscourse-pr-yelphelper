@@ -36,62 +36,49 @@
 </head>
 
 <body>
-<div id="foo"></div>
-
 <div class="site-wrapper">
 
     <div class="site-wrapper-inner">
-        <div class="masthead clearfix">
-            <div class="inner">
-                <h3 class="masthead-brand">YelpHelper</h3>
-                <nav>
-                    <ul class="nav masthead-nav">
-                        <li class="active"><a href="index.html">Home</a></li>
-                        <li><a href="analysis.html">Analysis</a></li>
-                        <li><a href="credits.html">Credits</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
 
         <div class="cover-container">
 
-            <div class="inner cover">
-                <div class="filler col-md-12"></div>
-                <div class="well col-md-8">
-                    <span><h5 class="col-md-3">Map Plotting</h5>
-                    <div id="floating-panel" class="col-md-4">
-                        <input id="address" type="textbox" value="Arizona">
-                        <input id="submit" type="button" value="Geocode">
-                    </div>
-                    <div id="floating-panel1" class="col-md-5">
-                        <select id="categories"></select>
-                        <input id="submit_categories" type="button" value="filter" onClick="filter()">
-                    </div></span>
-                    <div class="col-md-12" id="map">
-                    </div>
+            <div class="masthead clearfix">
+                <div class="inner">
+                    <h3 class="masthead-brand">YelpHelper</h3>
+                    <nav>
+                        <ul class="nav masthead-nav">
+                            <li class="active"><a href="index.html">Home</a></li>
+                            <li><a href="vis.html">Visualization</a></li>
+                            <li><a href="analysis.html">Analysis</a></li>
+                            <li><a href="credits.html">Credits</a></li>
+                        </ul>
+                    </nav>
                 </div>
-                <div class="well col-md-4">
-                    <h5>Business Percentages!</h5>
-                    <svg id="sunBurst" style="display: block; margin: auto"></svg>
+            </div>
+
+            <div class="well col-md-12">
+                <div class="col-md-6" align="justify">
+                    Welcome to the YelpHelper!! In this project, we have tried to visualize the business data associated with the <a href="http://www.yelp.com/dataset_challenge" style="color: #269abc">Yelp Educational Dataset</a>.
+                    This is a really huge data set with over <b>61k</b> businesses across the globe. As a user, you can select any category of the business in any state and select the subcategories and view their overall ratings over a period of time and across businesses. We believe this tool would help the users to better analyse the business growth based on the area and the type of businesses.
+                    The following are the primary visualizations for the project,
+                    <ul>
+                        <li><b>Map</b> - To view the geo location of businesses and select them for analysis.</li>
+                        <li><b>SunBurst</b> - To view the various categories of businesses per area and to select them.</li>
+                        <li><b>Area Graph</b> - To compare individual businesses selected from the map over a period of time.</li>
+                        <li><b>Bar Chart</b> - To view a bunch of businesses and their rating counts for all stars.</li>
+                        <li><b>Bipartite Graph</b> - To view the percent businesses per area and vice versa for the top 100 businesses.</li>
+                    </ul>
+                    Since we are dealing with huge data, delay in loading time could be expected for selection of large subsets of data.
                 </div>
-                <div class="well col-md-5">
-                    <h5>Business/Rating Area Chat!</h5>
-                    <svg id="areaGraph"></svg>
+                <div class="col-md-6">
+                    View our screencast here!!<hr>
+                    <iframe class="col-md-12" height="300" src="https://www.youtube.com/embed/wkJQlDoLz5o" frameborder="0" allowfullscreen></iframe>
                 </div>
-                <div id="barGraphID" class="well col-md-7">
-                    <h5>Bar Graph Business</h5>
-                    <svg id="barGraph"></svg>
-                </div>
-                <div id="barsContextDiv" class="well contextBars col-md-12">
-                    <svg id="barsContext"></svg>
-                </div>
-                <div class="filler col-md-12"></div>
             </div>
 
             <div class="mastfoot">
                 <div class="inner">
-                    <p>Visualization Course,  <a href="http://dataviscourse.net/2015/index.html"> dataViz</a>,  <a href="http://www.utah.edu/"> @UoU</a>.</p>
+                    <p>Visualization Course,  <a href="http://dataviscourse.net/2015/index.html">dataViz</a>,  <a href="http://www.utah.edu/">@UoU</a>.</p>
                 </div>
             </div>
 

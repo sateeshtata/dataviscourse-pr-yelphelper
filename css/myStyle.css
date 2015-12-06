@@ -83,6 +83,10 @@ svg {
     margin-bottom: 5px;
 }
 
+.opaque {
+    background-color: rgba(245,245,245,1);
+}
+
 .contextBars {
     background-color: rgba(0, 0, 0, 0.4);
     margin-bottom: 5px;
@@ -90,4 +94,8 @@ svg {
 
 .filler {
     height: 100px;
+}
+
+a:link {
+    color: #269abc;
 }
